@@ -329,7 +329,7 @@
           { id: "move_many", text: "Gibt es mehr als zwei bewegte Objekte?", weight: 3 },
           { id: "move_free", text: "Ist die Bewegung frei (oder in festen Schritten auf einem Raster/Spielbrett)?", weight: 4 },
           { id: "move_physics", text: "Gibt es realistische Sprünge oder Flugbahnen?", weight: 4 },
-          { id: "move_scroll", text: "Muss sich die Spielwelt bewegen (z. B. scrollen)?", weight: 2 },
+          { id: "move_scroll", text: "Muss sich die Spielwelt bewegen (z. B. scrollen)?", weight: 3 },
           { id: "move_chase", text: "Müssen Objekte den Spieler verfolgen, oder einen Weg zu einem Punkt finden?", weight: 5 }
         ]
       },
@@ -337,7 +337,7 @@
         category: "Kollision",
         items: [
           { id: "collision_yes", text: "Gibt es Kollision zwischen Objekten?", weight: 3 },
-          { id: "collision_complex_shape", text: "Sind die Objekte, die kollidieren können, ungefähr rechteckig, oder haben sie komplizierte Formen?", weight: 4 },
+          { id: "collision_complex_shape", text: "Haben die Objekte, die kollidieren können, komplizierte Formen (oder sind sie rechteckig)?", weight: 4 },
           { id: "collision_overlap", text: "Können sich Objekte überlagern/verdecken?", weight: 4 }
         ]
       },
