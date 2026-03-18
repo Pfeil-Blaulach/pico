@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spielidee – Schwierigkeitscheck</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --danger: #b91c1c;
+      --easy: #16a34a;
+      --medium: #d97706;
+      --hard: #dc2626;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --footer-height: 92px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px calc(var(--footer-height) + 32px);
+    }
+
+    .intro {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+    }
+
+    .intro p {
+      margin: 8px 0;
+      color: var(--muted);
+    }
+
+    .category {
+      margin-bottom: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .category h2 {
+      margin: 0;
+      padding: 14px 18px;
+      background: #eef2ff;
+      border-bottom: 1px solid var(--border);
+      font-size: 1.15rem;
+    }
+
+    .question-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 130px 120px;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .question-row:last-child {
+      border-bottom: none;
+    }
+
+    .question-text {
+      font-size: 1rem;
+    }
+
+    .weight {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    .weight-badge {
+      min-width: 32px;
+      text-align: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    select:focus {
+      outline: 2px solid #93c5fd;
+      outline-offset: 1px;
+      border-color: var(--accent);
+    }
+
+    .footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+      z-index: 100;
+    }
+
+    .footer-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 14px 16px 16px;
+    }
+
+    .score-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .score-title {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .score-meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .score-bar-wrap {
+      display: grid;
+      grid-template-columns: 90px minmax(0, 1fr) 90px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-label {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .score-label.right {
+      text-align: right;
+    }
+
+    .score-bar {
+      position: relative;
+      height: 20px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: linear-gradient(90deg, var(--easy) 0%, #84cc16 30%, var(--medium) 60%, var(--hard) 100%);
+    }
+
+    .score-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.55);
+      mix-blend-mode: screen;
+    }
+
+    .score-marker {
+      position: absolute;
+      top: -4px;
+      width: 4px;
+      height: 28px;
+      background: #111827;
+      border-radius: 4px;
+      transform: translateX(-50%);
+      left: 0%;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.75);
+    }
+
+    .legend {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .unanswered {
+      
+    }
+
+    #statusText {
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .question-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .weight {
+        order: 2;
+      }
+
+      select {
+        order: 3;
+      }
+
+      .score-bar-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .score-label.right {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="intro">
+      <h1>Spielidee – Schwierigkeitscheck</h1>
+      <p>Beantworte die Fragen mit <strong>Ja</strong> oder <strong>Nein</strong>. Wenn du bei einer Frage nicht weißt, wie du sie beantworten sollst, wähle <strong>-</strong> aus. </p>
+      <p>Der Schwierigkeits-Score unten wird fortlaufend aus allen bereits beantworteten Fragen berechnet.</p>
+    </section>
+
+    <main id="questionnaire"></main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="score-head">
+        <div class="score-title">Schwierigkeits-Score: <span id="scorePercent">0 %</span></div>
+        <div class="score-meta">
+          Beantwortet: <span id="answeredCount">0</span> / <span id="totalCount">0</span>
+          · Gewichtete Punkte: <span id="yesPoints">0</span> / <span id="answeredPoints">0</span>
+        </div>
+      </div>
+
+      <div class="score-bar-wrap">
+        <div class="score-label">einfach</div>
+        <div class="score-bar" aria-label="Schwierigkeitsbalken">
+          <div class="score-fill"></div>
+          <div class="score-marker" id="scoreMarker"></div>
+        </div>
+        <div class="score-label right">schwer</div>
+      </div>
+
+      <div class="legend" id="statusText">
+        Noch keine Frage beantwortet.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        category: "Spiellogik",
+        items: [
+          { id: "logic_store_info", text: "Müssen viele Informationen gespeichert werden?", weight: 1 },
+          { id: "logic_levels", text: "Gibt es mehrere Level?", weight: 1 },
+          { id: "logic_random", text: "Gibt es zufällige Ereignisse?", weight: 1 }
+        ]
+      },
+      {
+        category: "Gegner",
+        items: [
+          { id: "enemy_more_players", text: "Gibt es mehr als einen Spieler?", weight: 2 },
+          { id: "enemy_ai", text: "Gibt es einen Computer-Gegner?", weight: 2 }
+        ]
+      },
+      {
+        category: "Steuerung",
+        items: [
+          { id: "control_two_buttons", text: "Werden beide Taster benötigt?", weight: 1 },
+          { id: "control_dpad", text: "Wird das Steuerkreuz benötigt?", weight: 1 }
+        ]
+      },
+      {
+        category: "Objekte",
+        items: [
+          { id: "objects_many", text: "Gibt es viele Objekte (z. B. Bäume, markierte Felder, Wände, ...)?", weight: 2 },
+          { id: "objects_dynamic", text: "Müssen die Objekte während dem Spiel erzeugt und gelöscht werden?", weight: 2 }
+        ]
+      },
+      {
+        category: "Bewegung",
+        items: [
+          { id: "move_any", text: "Gibt es Bewegung?", weight: 2 },
+          { id: "move_many", text: "Gibt es mehr als zwei bewegte Objekte?", weight: 3 },
+          { id: "move_free", text: "Ist die Bewegung frei (oder in festen Schritten auf einem Raster/Spielbrett)?", weight: 4 },
+          { id: "move_physics", text: "Gibt es realistische Sprünge oder Flugbahnen?", weight: 4 },
+          { id: "move_scroll", text: "Muss sich die Spielwelt bewegen (z. B. scrollen)?", weight: 2 },
+          { id: "move_chase", text: "Müssen Objekte den Spieler verfolgen, oder einen Weg zu einem Punkt finden?", weight: 5 }
+        ]
+      },
+      {
+        category: "Kollision",
+        items: [
+          { id: "collision_yes", text: "Gibt es Kollision zwischen Objekten?", weight: 3 },
+          { id: "collision_complex_shape", text: "Sind die Objekte, die kollidieren können, ungefähr rechteckig, oder haben sie komplizierte Formen?", weight: 4 },
+          { id: "collision_overlap", text: "Können sich Objekte überlagern/verdecken?", weight: 4 }
+        ]
+      },
+      {
+        category: "Timing",
+        items: [
+          { id: "timing_important", text: "Ist Timing wichtig?", weight: 2 }
+        ]
+      },
+      {
+        category: "Grafik",
+        items: [
+          { id: "graphics_sprites", text: "Werden Sprites benötigt (oder gibt es nur Text und einfache Formen)?", weight: 1 },
+          { id: "graphics_animated_sprites", text: "Müssen Sprites animiert werden (z. B. Animation beim Absprung)?", weight: 4 }
+        ]
+      }
+    ];
+
+    const questionnaire = document.getElementById("questionnaire");
+    const scorePercent = document.getElementById("scorePercent");
+    const answeredCount = document.getElementById("answeredCount");
+    const totalCount = document.getElementById("totalCount");
+    const yesPoints = document.getElementById("yesPoints");
+    const answeredPoints = document.getElementById("answeredPoints");
+    const scoreMarker = document.getElementById("scoreMarker");
+    const statusText = document.getElementById("statusText");
+
+    function buildQuestionnaire() {
+      const allQuestions = questions.flatMap(group => group.items);
+      totalCount.textContent = String(allQuestions.length);
+
+      questions.forEach(group => {
+        const section = document.createElement("section");
+        section.className = "category";
+
+        const heading = document.createElement("h2");
+        heading.textContent = group.category;
+        section.appendChild(heading);
+
+        const list = document.createElement("div");
+        list.className = "question-list";
+
+        group.items.forEach(item => {
+          const row = document.createElement("div");
+          row.className = "question-row";
+
+          const text = document.createElement("div");
+          text.className = "question-text";
+          text.textContent = item.text;
+
+          const weight = document.createElement("div");
+          weight.className = "weight";
+          weight.innerHTML = `Gewichtung <span class="weight-badge">${item.weight}</span>`;
+
+          const select = document.createElement("select");
+          select.dataset.weight = String(item.weight);
+          select.dataset.questionId = item.id;
+          select.setAttribute("aria-label", item.text);
+          select.innerHTML = `
+            <option value="">-</option>
+            <option value="yes">Ja</option>
+            <option value="no">Nein</option>
+          `;
+          select.addEventListener("change", updateScore);
+
+          row.appendChild(text);
+          row.appendChild(weight);
+          row.appendChild(select);
+          list.appendChild(row);
+        });
+
+        section.appendChild(list);
+        questionnaire.appendChild(section);
+      });
+    }
+
+    function updateScore() {
+      const selects = [...document.querySelectorAll("select[data-weight]")];
+      let answered = 0;
+      let answeredWeightSum = 0;
+      let yesWeightSum = 0;
+
+      selects.forEach(select => {
+        const weight = Number(select.dataset.weight);
+        const value = select.value;
+
+        if (value === "yes" || value === "no") {
+          answered += 1;
+          answeredWeightSum += weight;
+          if (value === "yes") {
+            yesWeightSum += weight;
+          }
+        }
+      });
+
+      const score = answeredWeightSum > 0 ? (yesWeightSum / answeredWeightSum) * 100 : 0;
+      const rounded = Math.round(score);
+
+      answeredCount.textContent = String(answered);
+      yesPoints.textContent = String(yesWeightSum);
+      answeredPoints.textContent = String(answeredWeightSum);
+      scorePercent.textContent = `${rounded} %`;
+      scoreMarker.style.left = `${score}%`;
+
+      if (answered === 0) {
+        statusText.innerHTML = "Noch keine Frage beantwortet.";
+      } else {
+        let text = "Einfach";
+        if (score >= 10 && score < 30) text = "Einfach bis mittel";
+        if (score >= 30 && score < 60) text = "Mittlere Schwierigkeit";
+        if (score >= 60 && score < 80) text = "Eher schwer";
+        if (score >= 80) text = "Vermutlich zu schwer";
+
+        const unanswered = selects.length - answered;
+        statusText.innerHTML = `${text}`; //. <span class="unanswered">Noch offen: ${unanswered} Fragen</span>`;
+      }
+    }
+
+    buildQuestionnaire();
+    updateScore();
+  </script>
+</body>
+</html>
